@@ -1,0 +1,31 @@
+# Python and notebook artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Native builds and local tooling
+build/
+out/
+dist/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+
+# Benchmark outputs; keep small summaries and scripts in Git
+results/
+artifacts/
+profiler-*.nsys-rep
+profiler-*.qdrep
+*.sqlite
+
+# Local/editor/system files
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
