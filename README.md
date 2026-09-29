@@ -24,8 +24,9 @@ The presence of a hardware capability does not imply that an AI workload will be
 ## Start here
 
 - [Research brief](paper/research-brief.md) — motivation, scope, evidence levels, hypotheses, limitations, and open questions.
-- [Experiments](EXPERIMENTS.md) — six proposed experiment families, ordered by expected information value and increasing speculation.
+- [Experiments](EXPERIMENTS.md) — proposed experiment families with baselines and rejection criteria.
 - [Hardware notes](docs/hardware.md) — capability and API notes with platform caveats.
+- [Multimodal video input assessment](docs/multimodal-input.md) — what the video and platform engines could contribute to frame selection, temporal features, and selective reinspection.
 - [References](references.md) — NVIDIA documentation and relevant research.
 - [Contributing](CONTRIBUTING.md) — how to add measurements, negative results, and reproducible implementations.
 
@@ -37,6 +38,9 @@ The presence of a hardware capability does not imply that an AI workload will be
 4. NVENC motion estimation versus OFA.
 5. Fixed-function structural/anomaly side channels.
 6. Experimental non-video tensor/KV compression.
+7. Fixed-function signals for multimodal frame selection.
+8. OFA motion features as multimodal model input.
+9. Jetson preprocessing and selector offload (platform-specific).
 
 ## What would count as evidence?
 

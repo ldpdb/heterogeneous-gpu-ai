@@ -22,6 +22,15 @@ References are grouped by what they establish. Vendor documentation establishes 
 13. Khaki et al., [KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache](https://arxiv.org/abs/2402.02750). A purpose-built KV-cache compression baseline and reminder that transformer-state compression has specialized methods and error trade-offs.
 14. Hooper et al., [KVzip: Query-Agnostic KV Cache Compression with Context Reconstruction](https://arxiv.org/abs/2505.23416). Relevant to the non-video KV-cache compression comparison class.
 15. NVIDIA, [OptiX](https://developer.nvidia.com/optix). Primary API/product entry point for experiments that may use RT-accelerated ray-tracing operations; consult versioned documentation for exact support.
+16. NVIDIA, [Video Codec SDK 13.1 NVDEC Video Decoder API Programming Guide](https://docs.nvidia.com/video-technologies/video-codec-sdk/13.1/nvdec-video-decoder-api-prog-guide/index.html). Documents capability-gated H.264/HEVC per-block decode statistics, decoded surfaces, and video-memory paths; these are codec signals, not semantic labels.
+17. NVIDIA, [Optical Flow SDK Programming Guide](https://docs.nvidia.com/video-technologies/optical-flow-sdk/nvofa-programming-guide/index.html). Documents frame-pair inputs, vector grids, cost output, global flow, buffer management, and API restrictions.
+18. NVIDIA, [Video Codec SDK 13.1 NVENC Video Encoder API Programming Guide](https://docs.nvidia.com/video-technologies/video-codec-sdk/13.1/nvenc-video-encoder-api-prog-guide/index.html). Documents current motion-estimation-only mode and its capability query.
+19. NVIDIA, [VPI Basic Concepts](https://docs.nvidia.com/vpi/basic_concepts.html). Documents backend/device support and asynchronous streams for supported Jetson image and vision processing.
+20. NVIDIA, [PVA SDK](https://docs.nvidia.com/pva/index.html). Documents the programmable vision accelerator on NVIDIA DRIVE and Jetson platforms.
+21. NVIDIA, [TensorRT DLA Supported Layers and Restrictions](https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/dla-layer-restrictions.html). Documents version-specific DLA support, operator limits, and GPU fallback; verify support against the target release.
+22. Kim et al., [ReQuest: Rethinking-based Question-Aware Frame Selection for Long-Form Video QA](https://arxiv.org/abs/2607.01737), 2026. Related question-aware adaptive sampling; it does not demonstrate OFA benefit.
+23. Jeoung et al., [Adaptive Video Understanding Agent: Enhancing efficiency with dynamic frame sampling and feedback-driven reasoning](https://arxiv.org/abs/2410.20252), 2024. Related query-adaptive sampling and feedback-driven reinspection.
+24. Liu et al., [Flow4Agent: Long-form Video Understanding via Motion Prior from Optical Flow](https://arxiv.org/abs/2510.05836), 2025. Related use of flow-derived motion priors; it does not establish the fixed-function implementation's advantage.
 
 ## How to cite new results
 

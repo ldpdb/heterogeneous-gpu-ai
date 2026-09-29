@@ -111,6 +111,54 @@ For every experiment, record:
 
 **Falsifiers:** Conversion dominates; codec restrictions prevent a useful representation; reconstruction error harms quality; or purpose-built compression wins on quality, memory, and throughput. Such a result should be recorded as a useful boundary, not hidden.
 
+## 7. Fixed-function signals for multimodal frame selection
+
+**Evidence level:** Plausible extension. NVDEC decoding, capability-gated H.264/HEVC decode statistics, and OFA flow are documented; NVIDIA demonstrates NVDEC and OFA co-use with a detector in a tracker. No multimodal-model benefit is demonstrated here.
+
+**Question:** At a fixed visual-frame budget, can codec statistics or OFA-derived motion cues help a question-aware controller select evidence for video understanding without reducing answer quality or event recall?
+
+**Hypothesis:** On videos where relevant events correlate with visual motion or codec change, a selector with periodic coverage plus these signals may improve accuracy or latency relative to equally budgeted sampling. The hypothesis should be rejected for workloads where low-motion semantic events are missed or the extra analysis costs more than it saves.
+
+**Candidate design:** Decode a public, licensed video set with NVDEC. Keep periodic coverage; score intervals using codec statistics where supported, OFA flow/cost where supported, and an explicitly separate question-aware selector. Pass selected frames and timestamps to one declared multimodal model. Optionally allow one focused revisit of a source interval, charging its decode, seek, and inference costs to the variant.
+
+**Baselines and ablations:** Same NVDEC and model with uniform sampling; shot/scene-change and simple pixel-difference selection; a question-aware semantic selector; codec statistics alone; OFA alone; combined signals; selector without question input; without revisit. Keep the total frame/token budget matched, and also compare equal-quality system cost. Probe codec/SDK/hardware support rather than silently substituting another implementation.
+
+**Representation and evaluation:** Record source codec/GOP, resolution, frame rate, decoded/output surface format, clip length, question type, selected-frame timestamps, and model visual-token count. Include camera motion, cuts, static text changes, small/slow actions, and occlusion. Measure answer accuracy, event recall/localization, frames and visual tokens processed, p50/p95 end-to-end latency, all stage times, SM/OFA/NVDEC use, VRAM/bandwidth, CPU, and energy. Supply a timeline showing any claimed overlap.
+
+**Falsifiers:** Relevant low-motion events are systematically dropped; gains vanish against simple or semantic selectors; a focused revisit adds no net value; format conversion, frame-pair analysis, or synchronization dominates; or matched-quality end-to-end cost does not improve.
+
+## 8. OFA motion features as multimodal model input
+
+**Evidence level:** Speculative idea. OFA vector output is documented and optical-flow-based video representations exist in research, but an OFA-to-model representation and its benefit are unproven here.
+
+**Question:** Do compact OFA-derived temporal features improve a video model's motion-sensitive answers at a fixed frame and token budget?
+
+**Hypothesis:** A trained or calibrated motion encoder may add useful temporal evidence for some action and trajectory questions, provided its representation and overhead do not crowd out more valuable visual tokens.
+
+**Candidate design:** Compute flow, optional cost, and tracked-region summaries for declared frame pairs. Encode them with timestamps into a small, specified feature sequence; train or adapt one declared video model on public licensed data. Keep the visual frames fixed across variants. Do not treat raw vector numbers or object labels inferred from flow as self-explanatory language.
+
+**Baselines and ablations:** Same model/frames without motion features; extra RGB frames at equal token cost; CUDA or learned-flow features; magnitude-only, direction-only, and cost/uncertainty features; global-camera-motion compensation on/off; no temporal training. Separate model accuracy from OFA-versus-programmable implementation cost.
+
+**Representation and evaluation:** Record flow grid/preset/input format, frame-pair interval, feature quantization, encoder architecture, training data/license, resolution, and token allocation. Measure motion/action question accuracy, event localization, robustness to camera motion/occlusion/cuts, end-to-end latency and energy, OFA/SM use, memory traffic, and timeline evidence.
+
+**Falsifiers:** Added features fail to improve quality across held-out data; extra RGB frames or learned features dominate at the same budget; flow errors mislead the model; or encoding, training, and synchronization costs erase a useful systems trade-off.
+
+## 9. Jetson preprocessing and selector offload
+
+**Evidence level:** Platform-specific plausible extension. VIC, PVA, and DLA have documented roles and restrictions on supported NVIDIA platforms; this is not a desktop-GPU experiment.
+
+**Question:** Can supported Jetson image-processing or small-inference stages run on VIC, PVA, or DLA while the GPU executes a video model, improving whole-device latency or energy at unchanged answer quality?
+
+**Hypothesis:** A supported resize/color operation, vision primitive, or small selector subgraph may be more useful on a platform block when GPU contention is high, if transfers and fallback do not dominate.
+
+**Candidate design:** Choose one exact Jetson model, OS/JetPack, VPI/TensorRT version, supported operation/subgraph, and video task. Compare a GPU-only input path with the same path using one eligible block at a time; record actual placement and any GPU fallback. A decision model on DLA is only a candidate if its layers and runtime are supported on that configuration.
+
+**Baselines and ablations:** CPU and CUDA implementations of the same operation where available; GPU-only selector; block offload alone; block offload plus concurrent model load; copies/conversions included and excluded only as diagnostic ablations.
+
+**Representation and evaluation:** Record input format/resolution, batch/frame settings, supported operators, clocks/power mode, driver and SDK versions. Measure answer/selector quality, p50/p95 end-to-end latency, throughput, power/energy, CPU/GPU/block utilization, VRAM/bandwidth, fallback frequency, and a timeline of overlap.
+
+**Falsifiers:** Unsupported operation or silent GPU fallback; no measured overlap; copy/format costs dominate; worse quality; or the CUDA-only path wins at matched power and quality.
+
 ## Suggested result format
 
 Each completed experiment should add a short report containing:
