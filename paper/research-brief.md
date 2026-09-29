@@ -68,11 +68,11 @@ NVIDIA’s NVOFA tracker combines NVDEC, GPU object detection, optical flow, and
 
 ### 3.3 Plausible extension
 
-Segmentation-mask propagation, motion-conditioned generative video, compressed visual memory, and NVENC motion estimation as a fallback or comparison are plausible extensions because their data dependencies resemble documented video operations. They need controlled measurements.
+Segmentation-mask propagation, motion-conditioned generative video, compressed visual memory, NVENC motion estimation as a fallback or comparison, and motion/codec-guided selection of frames for a multimodal model are plausible extensions because their data dependencies resemble documented video operations. They need controlled measurements.
 
 ### 3.4 Highly speculative idea
 
-Using a video codec as a non-video tensor or transformer KV-cache compressor is intentionally high-risk. The data layout, precision, codec restrictions, conversion overhead, and error propagation may make it inferior to purpose-built methods. A negative result would be informative.
+Using a video codec as a non-video tensor or transformer KV-cache compressor is intentionally high-risk. Feeding OFA-derived motion features into a multimodal model is also speculative until a representation and trained or adapted model are evaluated. Data layout, precision, conversion overhead, and errors may make these ideas inferior to purpose-built methods. A negative result would be informative.
 
 ## 4. Why optical flow is the first test
 
@@ -131,7 +131,15 @@ The experiment is nevertheless worth isolating as a boundary test:
 
 Candidate layouts might map feature dimension, attention head, and token position onto spatial or temporal axes. Comparisons must include uncompressed KV, a purpose-built KV quantization/compression method, and the fixed-function path. Evaluate perplexity or task quality, attention/output error, memory savings, encode/decode latency, token throughput, bandwidth, and GPU occupancy. This is a low-probability/high-information experiment, not a proposed replacement for modern KV-cache research.
 
-## 9. Whole-device evaluation
+## 9. Multimodal video input and auxiliary decisions
+
+For incoming video, the immediate question is whether specialized engines can help a controller select visual evidence for a multimodal model. NVIDIA already demonstrates NVDEC, GPU object detection, and OFA in one tracker. Video Codec SDK 13.1 also documents capability-gated H.264/HEVC decode statistics, including motion vectors and block types. Neither fact establishes that a multimodal model will answer more accurately or cheaply after using these signals.
+
+A candidate pipeline retains periodic frame coverage, uses optional codec/OFA signals to propose intervals, applies a separate question-aware selector, and sends selected frames with timestamps to a vision encoder. The model may request a focused revisit of a short source interval. The selector, not the fixed-function engines, makes the decision. NVENC is optional for proxy creation or compressed history; copy engines can stage data but do not analyze content. On supported Jetson devices, VIC/PVA/DLA may provide platform-specific preprocessing or small-model placement. RT hardware has no established role in ordinary 2D frame selection.
+
+These ideas are scoped in the [multimodal input assessment](../docs/multimodal-input.md). [Experiment cards 7–9](../EXPERIMENTS.md) require equal-budget sampling baselines, low-motion event tests, exact API support, end-to-end costs, and negative-result reporting.
+
+## 10. Whole-device evaluation
 
 The agenda can fail if it optimizes an isolated kernel or engine instead of useful system output. A CUDA implementation may be faster in isolation but harm a saturated inference pipeline; conversely, an OFA or NVENC operation may be slower in isolation but useful if it lets scarce SM resources remain on the model.
 
@@ -150,7 +158,7 @@ Every serious result should report:
 
 The desired quantity is useful whole-device output, not a claim that an auxiliary engine is universally faster.
 
-## 10. Limitations and failure modes
+## 11. Limitations and failure modes
 
 Likely failure modes include:
 
@@ -167,7 +175,7 @@ Likely failure modes include:
 
 These are not footnotes. They define the falsification conditions for the agenda.
 
-## 11. Research opportunity
+## 12. Research opportunity
 
 AI workloads are increasingly multimodal, temporal, stateful, and memory-constrained. A future runtime might schedule semantic inference on Tensor/SM resources while using OFA for motion, NVENC/NVDEC for visual history, copy engines for staging, and product-specific accelerators for compatible image operations. That is a compiler/runtime and systems research opportunity only if the representations and dependencies can be made practical.
 
@@ -177,7 +185,7 @@ The modest claim is therefore:
 
 The answer may be “very little.” The purpose of this repository is to find out carefully.
 
-## 12. Suggested first deliverables
+## 13. Suggested first deliverables
 
 1. A capability probe and environment report for one or more GPUs.
 2. A minimal OFA-versus-CUDA flow microbenchmark with overlap instrumentation.
